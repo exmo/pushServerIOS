@@ -29,11 +29,13 @@ public class PushNotificationRS {
 	@Produces("application/json; charset=UTF-8")
 	public String[] push(@PathParam("token") String token, @PathParam("msg") String msg) {
 		
-		System.out.println("Token: "+token+"\n MSG: "+msg);
+		System.out.println("Preparando mensagem \n \tToken: "+token+"\n \tMSG: "+msg);
 		
 		ApnsService service = getService();
 		
 		String payload = APNS.newPayload().alertBody(msg).badge(10).sound("message").build();
+		
+		System.out.println("Payload: "+payload);
 		service.push(token, payload); 
 		
 		return new String[]{"Token: "+token, "MSG: "+msg};
