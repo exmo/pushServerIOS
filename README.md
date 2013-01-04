@@ -100,3 +100,4 @@ Abra as portas 2195 e 2196 no firewal para:
 * [Apple Developer](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008194-CH1-SW1)
 * [raywenderlich : Apple Push Notification Services Tutorial](http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12)
 * [Apple Developer: Certificados! A parte mais difícil](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW3)
+* [Apple Developer: IP's e segurança](http://developer.apple.com/library/ios/#technotes/tn2265/_index.html#//apple_ref/doc/uid/DTS40010376-CH1-TNTAG41)
