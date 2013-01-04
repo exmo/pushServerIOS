@@ -78,6 +78,9 @@ O servidor da apple funciona nas portas 2195 e 2196, por isso o firewall deve li
 O ip não é fixo eles tem um balanceamento, por isso, principalmente em produção, deve-se criar regras no firewall liberando o
 acesso as urls por faixas de ip.
 
+Na documentação da Apple eles dizem que o bloco 17.0.0.0/8 é todo reservado para ela. Ou seja... do ip 17.0.0.0 ao 17.255.255.255.
+
+
 #### 5.1 -Para produção (gateway.push.apple.com)
 
 Abra as portas 2195 e 2196 no firewal para:
