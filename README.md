@@ -71,6 +71,30 @@ Rode o servidor, rodamos no jboss 7. Em seguida abra o browser e execute uma url
 
 "http://localhost:8080/push/rest/push/4f2330c0f36336f02aad1dca8e2d453b15bde23dcf49307a89ebfa5d3ee161c6/Minha mensagem push"
 
+### 5 - Infraestrutura
+
+O servidor da apple funciona nas portas 2195 e 2196, por isso o firewall deve liberar o acesso a estas portas.
+
+O ip não é fixo eles tem um balanceamento, por isso, principalmente em produção, deve-se criar regras no firewall liberando o
+acesso as urls por faixas de ip.
+
+#### 5.1 -Para produção (gateway.push.apple.com)
+
+Abra as portas 2195 e 2196 no firewal para:
+
+* 17.149.35.0 / 24
+* 17.172.238.0 / 24
+
+#### 5.2 - Para desenvolvimento (gateway.sandbox.push.apple.com)
+
+Abra as portas 2195 e 2196 no firewal para:
+
+* 17.149.34.66
+* 17.149.34.65
+* 17.172.233.65
+* 17.172.233.66
+
+
 ## Referências
 
 * [Apple Developer](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008194-CH1-SW1)
