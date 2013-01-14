@@ -33,7 +33,7 @@ public class PushNotificationCordovaRS {
 		
 		ApnsService service = getService();
 		
-		String payload = APNS.newPayload().alertBody(msg).badge(10).sound("message").build();
+		String payload = APNS.newPayload().alertBody(msg).sound("message").build();
 		
 		System.out.println("Payload: "+payload);
 		service.push(token, payload); 
