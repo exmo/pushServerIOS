@@ -22,6 +22,9 @@ public class PushNotificationRS {
 	
 	private static final String PASSWORD = "tecnologia123";
 	private static final String CERTIFICADO = "ServerCertificadoEchavePrivada.p12";
+	
+	private static final String PASSWORD_CORDOVA = "tecnologia123";
+	private static final String CERTIFICADO_CORDOVA = "PushCordova.p12";
 
 
 	@GET
@@ -32,11 +35,13 @@ public class PushNotificationRS {
 		System.out.println("Preparando mensagem \n \tToken: "+token+"\n \tMSG: "+msg);
 		
 		ApnsService service = getService();
+		ApnsService serviceCordova = getServiceCordova();
 		
 		String payload = APNS.newPayload().alertBody(msg).badge(10).sound("message").build();
 		
 		System.out.println("Payload: "+payload);
 		service.push(token, payload); 
+		serviceCordova.push(token, payload); 
 		
 		return new String[]{"Token: "+token, "MSG: "+msg};
 		
@@ -50,6 +55,18 @@ public class PushNotificationRS {
 		ApnsService service =
 			    APNS.newService()
 			    .withCert(path, PASSWORD)
+			    .withSandboxDestination()
+			    .build();
+		return service;
+	}
+	
+	public ApnsService getServiceCordova(){
+		
+		InputStream path = PushNotificationRS.class.getClassLoader().getResourceAsStream(CERTIFICADO_CORDOVA);
+		
+		ApnsService service =
+			    APNS.newService()
+			    .withCert(path, PASSWORD_CORDOVA)
 			    .withSandboxDestination()
 			    .build();
 		return service;
