@@ -7,6 +7,8 @@ package rest;
 
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,6 +21,8 @@ import com.notnoop.apns.ApnsService;
 
 @Path("/push")
 public class PushNotificationRS {
+	
+	public static final List<Register> registers = new ArrayList<Register>();
 	
 	
 	private static final String PASSWORD = "tecnologia123";
@@ -50,6 +54,45 @@ public class PushNotificationRS {
 		
 	}		
 	
+	@GET
+	@Path("register/{token}/{name}/{device}/{so}")
+	@Produces("application/json; charset=UTF-8")
+	public Boolean register(@PathParam("token") String token, @PathParam("name") String name, @PathParam("device") String device, @PathParam("so") String so) {
+		System.out.println("Registrando \n \tToken: "+token+"\n \tName: "+name);
+		
+		boolean newRegister = true;
+		for (Register register : registers) {
+			if(register.token.trim().equals(token.trim())){
+				newRegister = false;
+				register.setName(name);
+				register.setDevice(device);
+				register.setSo(so);
+			}
+		}
+		if(newRegister){
+			Register register = new Register();
+			register.setToken(token);
+			register.setName(name);
+			register.setDevice(device);
+			register.setSo(so);
+		
+			registers.add(register);
+		}
+		
+		return new Boolean(true);
+		
+	}
+	
+	@GET
+	@Path("register/devices")
+	@Produces("application/json; charset=UTF-8")
+	public List<Register> listDevices() {
+		System.out.println("Listando os dispositivos");
+				
+		return registers;
+		
+	}
+	
 	
 	public ApnsService getService(){
 		
@@ -74,5 +117,38 @@ public class PushNotificationRS {
 			    .build();
 		return service;
 	}
+	
+	public class Register{
+		private String token;
+		private String name;
+		private String device;
+		private String so;
+		public String getToken() {
+			return token;
+		}
+		public void setToken(String token) {
+			this.token = token;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getDevice() {
+			return device;
+		}
+		public void setDevice(String device) {
+			this.device = device;
+		}
+		public String getSo() {
+			return so;
+		}
+		public void setSo(String so) {
+			this.so = so;
+		}
+		
+	}
+	
 	
 }

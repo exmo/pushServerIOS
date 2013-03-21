@@ -12,15 +12,23 @@
 <link rel="stylesheet" href="css/uniform.aristo.css" media="screen" />
 
 <script type="text/javascript">
+
+	var arr = window.location.href.split("/");
+	var baseURL = arr[0] + "//" + arr[2]	+"/"+ arr[3];
+
+
 	$(function() {
-		var tokens = [{"key": "4f2330c0f36336f02aad1dca8e2d453b15bde23dcf49307a89ebfa5d3ee161c6", "value": "Robgol iPhone"}];
-		
-		$("select#token").empty();
-		var options = '';
-	    for (var i = 0; i < tokens.length; i++) {
-	        options += '<option value="'+tokens[i].key+'">'+tokens[i].value+'</option>';
-	    }
-	    $("select#token").html(options);
+
+		$.getJSON(baseURL+"/rest/push/register/devices", null, function(data){
+			console.log('Exibindo o resultado: '+data);
+			$("select#token").empty();
+			var options = '';
+		    for (var i = 0; i < data.length; i++) {
+			    var r = data[i];
+		        options += '<option value="'+r.token+'">'+r.name+'('+r.device+', v'+r.so+')'+'</option>';
+		    }
+		    $("select#token").html(options);
+		})
 
 		
 		$("#result").dialog({
@@ -38,16 +46,9 @@
 		});
 		
 		$("#btnNormal").click(function(){
-			console.log('Submetendo requisição ao servidor...');
-			var url = window.location.href;
-			var arr = url.split("/");
-			var domain = arr[0] + "//" + arr[2]	
-
 		    var token = $("#token").val();
 			var msg = $("#msg").val();
-						
-			var url = domain+"/pushServerIOS/rest/push/"+token+"/"+msg;
-			console.log(url);
+			var url = baseURL+"/rest/push/"+token+"/"+msg;
 			$.getJSON(url, null, function(data){
 				console.log('Exibindo o resultado: '+data);
 				$("#result").text(data);
