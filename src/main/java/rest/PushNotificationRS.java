@@ -14,6 +14,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import com.notnoop.apns.APNS;
+import com.notnoop.apns.ApnsNotification;
 import com.notnoop.apns.ApnsService;
 
 @Path("/push")
@@ -30,7 +31,7 @@ public class PushNotificationRS {
 	@GET
 	@Path("/{token}/{msg}")
 	@Produces("application/json; charset=UTF-8")
-	public String[] push(@PathParam("token") String token, @PathParam("msg") String msg) {
+	public ApnsNotification[] push(@PathParam("token") String token, @PathParam("msg") String msg) {
 		
 		System.out.println("Preparando mensagem \n \tToken: "+token+"\n \tMSG: "+msg);
 		
@@ -40,10 +41,12 @@ public class PushNotificationRS {
 		String payload = APNS.newPayload().alertBody(msg).badge(10).sound("message").build();
 		
 		System.out.println("Payload: "+payload);
-		service.push(token, payload); 
-		serviceCordova.push(token, payload); 
+		ApnsNotification n1 = service.push(token, payload); 
+		ApnsNotification n2 =serviceCordova.push(token, payload); 
 		
-		return new String[]{"Token: "+token, "MSG: "+msg};
+		
+		
+		return new ApnsNotification[]{n1, n2};
 		
 	}		
 	

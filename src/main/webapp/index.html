@@ -1,38 +1,126 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-	<meta charset="utf-8">
-	<title>Push Notification</title>
-	<script type="text/javascript" src="script/jquery-1.9.1.min.js"></script>
-	<script type="text/javascript">
+<meta charset="utf-8">
+<title>Push Notification</title>
+<link rel="stylesheet" href="css/cupertino/jquery-ui-1.10.2.custom.css">
+<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.10.2.custom.js"></script>
+
+<!-- Uniform Plugin for JQuery -->
+<script src="js/jquery.uniform.js"></script>
+<link rel="stylesheet" href="css/uniform.aristo.css" media="screen" />
+
+<script type="text/javascript">
 	$(function() {
+		var tokens = [{"key": "4f2330c0f36336f02aad1dca8e2d453b15bde23dcf49307a89ebfa5d3ee161c6", "value": "Robgol iPhone"}];
+		
+		$("select#token").empty();
+		var options = '';
+	    for (var i = 0; i < tokens.length; i++) {
+	        options += '<option value="'+tokens[i].key+'">'+tokens[i].value+'</option>';
+	    }
+	    $("select#token").html(options);
+
+		
+		$("#result").dialog({
+			autoOpen: false,
+			width: 400,
+			buttons: [
+				{
+					text: "Ok",
+					click: function() {
+						$(this).empty();
+						$(this).dialog( "close" );
+					}
+				}
+			]
+		});
+		
 		$("#btnNormal").click(function(){
+			console.log('Submetendo requisição ao servidor...');
 			var url = window.location.href;
 			var arr = url.split("/");
-			var domain = arr[0] + "//" + arr[2]				
+			var domain = arr[0] + "//" + arr[2]	
+
+		    var token = $("#token").val();
+			var msg = $("#msg").val();
+						
 			var url = domain+"/pushServerIOS/rest/push/"+token+"/"+msg;
+			console.log(url);
 			$.getJSON(url, null, function(data){
-				
-			    alert(data);
+				console.log('Exibindo o resultado: '+data);
+				$("#result").text(data);
+				$("#result").dialog( "open" );
+			}).error(function(data) { 
+				console.log('Problema na requisição: '+data);
+				$("#result").text("Não foi possível realizar a operação.");
+				$("#result").dialog( "open" ); 
 			});	
 		});	
+		
+		$("select, input, button").uniform();
+
   	});
   	</script>
+  	<style type="text/css" media="screen">
+			body {
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				color: #666;
+				padding: 40px;
+			}
+			h1 {
+				margin-top: 0;
+			}
+			label {
+				font-size: 10px;
+				font-weight: bold;
+				text-transform: uppercase;
+				display: block;
+				margin-bottom: 3px;
+				clear: both;
+			}
+			.error {
+				background-color: #FF8080;
+			}
+			.hide {
+				display: none;
+			}
+		</style>
+  	
 </head>
 <body>
 	<h1>Push ON!</h1>
 
-	jhkjhkjh
-
-	<p>Envia uma mensagem para o exemplo nativo:</p>
-
-	<form id="formId" action="#">
-		TOKEN: <input type="text" id="token" name="token"
-			value="4f2330c0f36336f02aad1dca8e2d453b15bde23dcf49307a89ebfa5d3ee161c6" />
-		<br /> Mensagem: <input type="text" id="msg" name="msg" value="" /> <br />
-		<input type="button" id="btnNormal" value="Enviar" />
-	</form>
+	<div class="ui-widget ui-widget-header">
+		<h2>Enviar mensagem push</h2>
 	
+		<form id="formId" action="?">
+			<table>
+				<tbody>
+					<tr>
+						<td>
+							<div>
+								<label for="msg">Mensagem:</label> 
+								<input type="text" id="msg" name="msg" size="40" class="text" /> 
+							</div>
+							<div>
+								<label for="token">Token:</label> 
+									<select id="token"	name="token">
+										<option>Carregando...</option>
+									</select>
+							 </div>
+							<div>
+								<input type="button" id="btnNormal" value="Enviar" />
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+
+		</form>
+	</div>
 	<div id="result"></div>
 
 </body>
