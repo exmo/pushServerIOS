@@ -7,7 +7,10 @@ package rest;
 
 
 import java.io.InputStream;
+import java.net.ConnectException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -24,31 +27,65 @@ public class PushNotificationRS {
 	
 	public static final List<Register> registers = new ArrayList<Register>();
 	
+	public static final List<String> log = new ArrayList<String>();
+	
 	
 	private static final String PASSWORD = "tecnologia123";
 	private static final String CERTIFICADO = "ServerCertificadoEchavePrivada.p12";
 	
 	private static final String PASSWORD_CORDOVA = "tecnologia123";
 	private static final String CERTIFICADO_CORDOVA = "PushCordova.p12";
+	
+	public List<String> getLog(){
+		if(log.isEmpty()){
+			addLog("Servidor reiniciado");
+		}
+		return log;
+	}
+	
+	public void addLog(String msg){
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss");
+		String date = formatter.format(new Date());
+		log.add(date+" - "+msg);
+	}
 
 
 	@GET
 	@Path("/{token}/{msg}")
 	@Produces("application/json; charset=UTF-8")
 	public ApnsNotification[] push(@PathParam("token") String token, @PathParam("msg") String msg) {
-		
-		System.out.println("Preparando mensagem \n \tToken: "+token+"\n \tMSG: "+msg);
+		System.out.println("Preparando mensagem. Token: ("+token+") MSG: "+msg);		
 		
 		ApnsService service = getService();
 		ApnsService serviceCordova = getServiceCordova();
 		
 		String payload = APNS.newPayload().alertBody(msg).badge(10).sound("message").build();
 		
-		System.out.println("Payload: "+payload);
-		ApnsNotification n1 = service.push(token, payload); 
-		ApnsNotification n2 =serviceCordova.push(token, payload); 
+		addLog("Preparando mensagem:  "+payload);
 		
+		ApnsNotification n1 = null;
+		ApnsNotification n2 = null;
+		try{
+			n1 = service.push(token, payload);
+		}catch (Throwable e) {
+			e.printStackTrace();
+			addLog("Falha no envio para iOS: Token("+token+")" );
+		}
 		
+		try{
+			n2 =serviceCordova.push(token, payload); 
+		}catch (Throwable e) {
+			e.printStackTrace();
+			addLog("Falha no envio para PhoneGAP: Token("+token+")" );
+		}
+		
+		if(n1!=null){
+			addLog("Mensagem enviada para app iOS");
+		}
+		
+		if(n2!=null){
+			addLog("Mensagem enviada para app Cordova");
+		}
 		
 		return new ApnsNotification[]{n1, n2};
 		
@@ -58,7 +95,8 @@ public class PushNotificationRS {
 	@Path("register/{token}/{name}/{device}/{so}")
 	@Produces("application/json; charset=UTF-8")
 	public Boolean register(@PathParam("token") String token, @PathParam("name") String name, @PathParam("device") String device, @PathParam("so") String so) {
-		System.out.println("Registrando \n \tToken: "+token+"\n \tName: "+name);
+		System.out.println("Registrando dispositivo.");
+		addLog("Registrando Dispositivo: "+name);
 		
 		boolean newRegister = true;
 		for (Register register : registers) {
@@ -87,10 +125,23 @@ public class PushNotificationRS {
 	@Path("register/devices")
 	@Produces("application/json; charset=UTF-8")
 	public List<Register> listDevices() {
-		System.out.println("Listando os dispositivos");
+		System.out.println(" - Listando os dispositivos");
 				
 		return registers;
 		
+	}
+	
+	@GET
+	@Path("log")
+	@Produces("application/json; charset=UTF-8")
+	public List<String> listLog() {
+		System.out.println("Logs");
+		List<String> lista = getLog();
+		List<String> reverse = new ArrayList<String>();
+		for (int i = lista.size()-1; i >= 0; i--) {
+			reverse.add(lista.get(i));
+		}		
+		return reverse;		
 	}
 	
 	

@@ -16,9 +16,22 @@
 	var arr = window.location.href.split("/");
 	var baseURL = arr[0] + "//" + arr[2]	+"/"+ arr[3];
 
+	function atualizarLOG(){
+		$.getJSON(baseURL+"/rest/push/log", null, function(data){
+			console.log('Exibindo o log: '+data);
+			$("#logdiv").empty();			
+			var table = '<ul id="logTable">';
+			for (var i = 0; i < data.length; i++) {
+				var tr ='<li>'+data[i]+'</li>';	
+				table += tr;			    
+			}
+			table += '</ul>';			
+		    $("#logdiv").html(table);	  
 
-	$(function() {
+		});
+	}
 
+	function montarComboDispositivos(){
 		$.getJSON(baseURL+"/rest/push/register/devices", null, function(data){
 			console.log('Exibindo o resultado: '+data);
 			$("select#token").empty();
@@ -28,8 +41,13 @@
 		        options += '<option value="'+r.token+'">'+r.name+'('+r.device+', v'+r.so+')'+'</option>';
 		    }
 		    $("select#token").html(options);
-		})
+		});		
+	}
 
+	
+	$(function() {		
+		
+		montarComboDispositivos();
 		
 		$("#result").dialog({
 			autoOpen: false,
@@ -51,7 +69,8 @@
 			var url = baseURL+"/rest/push/"+token+"/"+msg;
 			$.getJSON(url, null, function(data){
 				console.log('Exibindo o resultado: '+data);
-				$("#result").text(data);
+				var jsonString = JSON.stringify(data, null, 4);
+				$("#result").text(jsonString);
 				$("#result").dialog( "open" );
 			}).error(function(data) { 
 				console.log('Problema na requisição: '+data);
@@ -59,8 +78,15 @@
 				$("#result").dialog( "open" ); 
 			});	
 		});	
+
+		atualizarLOG();
+		// Agendar para ficar atualizando;
+		window.setInterval(atualizarLOG, 4500);	
+		window.setInterval(montarComboDispositivos, 4500);	
 		
 		$("select, input, button").uniform();
+
+		
 
   	});
   	</script>
@@ -90,14 +116,16 @@
 		</style>
   	
 </head>
-<body>
-	<h1>Push ON!</h1>
+<body class="ui-widget-content">
+	<h1>Servidor de Push On-line!</h1>
+	
+	<p>Registre seu dispositivos acessando um dos app disponíveis(iOS ou Cordova)</p>
 
-	<div class="ui-widget ui-widget-header">
-		<h2>Enviar mensagem push</h2>
+	<div class="ui-widget ui-corner-tl ui-corner-tr">
+		<h1>Enviar mensagem push</h1>
 	
 		<form id="formId" action="?">
-			<table>
+			<table class="ui-widget-content">
 				<tbody>
 					<tr>
 						<td>
@@ -106,7 +134,7 @@
 								<input type="text" id="msg" name="msg" size="40" class="text" /> 
 							</div>
 							<div>
-								<label for="token">Token:</label> 
+								<label for="token">Dispositivo:</label> 
 									<select id="token"	name="token">
 										<option>Carregando...</option>
 									</select>
@@ -123,6 +151,13 @@
 		</form>
 	</div>
 	<div id="result"></div>
+	
+	<br />
+	<div id="log" class="ui-widget ui-corner-tl ui-corner-tr">
+		<h1 class="ui-widget-header">Histórico de atividades:</h1>
+		<div id="logdiv" class="ui-widget-content">
+		</div>
+	</div>
 
 </body>
 </html>
